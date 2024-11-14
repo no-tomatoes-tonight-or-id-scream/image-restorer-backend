@@ -19,6 +19,12 @@ class Processor:
         :return: 返回处理的图像
         '''
         self._processing = True
+        '''
+        main: 传路径，改成临时存储
+        test_targetscale: 逻辑
+        '''
+
+        
         self._processing = False
         
         pass
