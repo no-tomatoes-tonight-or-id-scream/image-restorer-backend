@@ -22,16 +22,6 @@ def upload_status():
     return Status().upload_status()
 
 
-# 前端上传图片，返回 OK
-@app.post("/upload_image")
-def upload_image():
-    """
-    上传图片
-    :return: 返回 OK 或者 NO
-    """
-    return Uploader().upload_image()
-
-
 # 前端删除图片，路径从数据库删除，返回 OK
 @app.post("/remove_image")
 def remove_image():
