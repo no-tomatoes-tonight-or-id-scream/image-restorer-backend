@@ -1,17 +1,6 @@
 device: auto
 gh_proxy: null
 input_path:
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\gray.jpg"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\herta.jpg"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-10.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-10.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-20.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-40.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-80.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-160.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\final2x-320.png"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\herta-unix-pic.exe"
-- "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets\\vulkan-1.dll"
 output_path: "D:\\2024\u79CB\\\u8F6F\u4EF6\u5DE5\u7A0B\\Final2x-core\\assets"
 pretrained_model_name: RealESRGAN_AnimeJaNai_HD_V3_Compact_2x.pth
 target_scale: null
