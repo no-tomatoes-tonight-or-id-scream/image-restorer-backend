@@ -20,7 +20,7 @@ class CCRestoration:
     def __init__(self, config: SRConfig) -> None:
         self.config: SRConfig = config
 
-        PrintProgressLog().set(len(self.config.input_path), 1)
+        # PrintProgressLog().set(len(self.config.input_path), 1)
 
         self._SR_class: SRBaseModel = self._init_SR_model()
 
@@ -57,7 +57,7 @@ class CCRestoration:
         )
 
         img = self._SR_class.inference_image(img)
-        PrintProgressLog().printProgress()
+        # PrintProgressLog().printProgress()
 
         if abs(float(self.config.target_scale) - float(self.config.cc_model_scale)) < 1e-3:  # type: ignore
             return img

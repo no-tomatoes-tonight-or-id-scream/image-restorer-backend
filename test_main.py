@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from fastapi import UploadFile, File
 import pytest
 from main import app
 import io
@@ -45,21 +46,38 @@ def test_upload_status():
 
 def test_process():
     """测试处理图片接口"""
-    # 创建测试用的配置字典和图片文件
-    test_config = {"param1": "value1", "param2": "value2"}
+    import cv2
+    import numpy as np
+    import base64
 
-    # 创建一个模拟的图片文件
-    test_image = io.BytesIO(b"fake image content")
+    test_target_scale = 2.0
+    test_pretrained_model_name = "RealESRGAN_AnimeJaNai_HD_V3_Compact_2x.pth"
+
+    test_image_path = (
+        "C:/Users/Jiarong/Pictures/890b6e72-9092-4ee8-a988-0239d41ba787.png"
+    )
+    test_image_type = "image/png"
+    with open(test_image_path, "rb") as f:
+        test_image_bytes = f.read()
+        test_image = io.BytesIO(test_image_bytes)
 
     # 发送测试请求
     response = client.post(
         "/process",
-        json=test_config,
-        files={"image": ("test.jpg", test_image, "image/jpeg")},
+        params={
+            "target_scale": test_target_scale,
+            "pretrained_model_name": test_pretrained_model_name,
+        },
+        files={"image": ("test.jpg", test_image, test_image_type)},
     )
 
+    # 解析响应
+    response_json = response.json()
+
+    # 解码 base64 编码的图像数据
+    result_bytes = base64.b64decode(response_json["result"])
+
     assert response.status_code == 200
-    # 假设 Processor().process() 返回某种处理结果
     assert "status" in response.json()
 
 

@@ -1,10 +1,19 @@
+import base64
 from fastapi import FastAPI
 from status import Status
 from uploader import Uploader
 from processor import Processor
 from fastapi import UploadFile, File
+from fastapi.encoders import jsonable_encoder
+import numpy as np
 
 app = FastAPI()
+
+
+def numpy_encoder(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
 
 
 @app.get("/")
@@ -17,41 +26,40 @@ def read_root():
 def upload_status():
     """
     上传图片状态
-    :return: 返回 OK 或者 NO
+    :return: 返回 OK 或者 ERROR
     """
     return Status().upload_status()
 
 
-# # 前端上传图片，返回 OK
-# @app.post("/upload_image")
-# def upload_image():
-#     """
-#     上传图片
-#     :return: 返回 OK 或者 NO
-#     """
-#     return Uploader().upload_image()
+def bytes_encoder(obj):
+    return base64.b64encode(obj).decode('utf-8')
 
-
-# # 前端删除图片，路径从数据库删除，返回 OK
-# @app.post("/remove_image")
-# def remove_image():
-#     """
-#     删除图片
-#     :return: 返回 OK 或者 NO
-#     """
-#     return Uploader().remove_image()
-
-
-# 获取前端请求中负载的 config 字典
-# 调用方法：requests.post("http://root:8000/process", files={"config_file": open("config.yaml", "rb")})
 @app.post("/process")
-async def process(config: dict, image: UploadFile = File(...)):
+async def process(
+    target_scale: float, pretrained_model_name: str, image: UploadFile = File(...)
+):
     """
     上传 config 字典
     :param config: 上传的配置字典
-    :return: 返回 OK 或者 NO
+    :return: 返回 OK 或者 ERROR
     """
-    return Processor().process(config, image)
+    config = {
+        "device": "auto",
+        "gh_proxy": None,
+        "input_path": None,
+        "output_path": None,
+        "pretrained_model_name": pretrained_model_name,
+        "target_scale": target_scale,
+    }
+    result = Processor().process(config, image)
+
+    # 使用自定义编码器，对 bytes 进行 base64 编码
+    custom_encoder = {
+        bytes: bytes_encoder,
+        np.ndarray: lambda x: base64.b64encode(x).decode('utf-8')
+    }
+    
+    return jsonable_encoder(result, custom_encoder=custom_encoder)
 
 @app.post("/get_processing_status")
 def get_processing_status():

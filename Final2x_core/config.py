@@ -13,8 +13,8 @@ class SRConfig(BaseModel):
     device: str
     gh_proxy: Optional[str] = None
     target_scale: Optional[Union[int, float]] = None
-    output_path: DirectoryPath
-    input_path: List[FilePath]
+    output_path: Optional[str] = None
+    input_path: Optional[str] = None
     cc_model_scale: Optional[int] = None
 
     @classmethod
@@ -58,6 +58,16 @@ class SRConfig(BaseModel):
 
         return cls.from_json_str(config_json_str)
 
+    @classmethod
+    def from_dict(cls, config: dict) -> Any:
+        cfg = cls(**config)
+        c: BaseConfig = AutoConfig.from_pretrained(pretrained_model_name=cfg.pretrained_model_name)
+
+        cfg.cc_model_scale = c.scale
+        if cfg.target_scale is None or cfg.target_scale <= 0:
+            cfg.target_scale = c.scale
+        return cfg
+    
     @field_validator("device")
     def device_match(cls, v: str) -> str:
         device_list = ["auto", "cpu", "cuda", "mps", "xpu", "xla", "meta"]

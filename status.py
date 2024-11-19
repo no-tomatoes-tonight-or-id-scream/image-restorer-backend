@@ -1,6 +1,7 @@
 import os
 
 from loguru import logger
+from ccrestoration import ConfigType
 
 class Status:
     def __init__(self):
