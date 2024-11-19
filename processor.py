@@ -1,7 +1,10 @@
-import yaml
-import argparse
-import os
+import json
 from fastapi import File
+import cv2
+import numpy as np
+
+from Final2x_core import CCRestoration, SRConfig
+from util import calculate_image_similarity, compare_image_size
 
 class Processor:
     def __init__(self):
@@ -19,9 +22,19 @@ class Processor:
         :return: 返回处理的图像
         '''
         self._processing = True
-        self._processing = False
+
+        config_json_str = json.dumps(config, indent=4)  
+        parsed_config = SRConfig.from_json_str(config_json_str)
+        SR = CCRestoration(config=parsed_config)
+        image_bytes = image.file.read()  # 获取上传文件的字节数据
+        source_img = cv2.imdecode(np.frombuffer(image_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
+        result_img = SR.process(source_img)
+        assert calculate_image_similarity(source_img, result_img)
+        assert compare_image_size(source_img, result_img, parsed_config.target_scale)
         
-        pass
+        self._processing = False
+        return result_img
+        
         
     def process(self, config: dict, image: File):
         '''
