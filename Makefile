@@ -25,3 +25,6 @@ build:
 pyinstaller:
 	poetry run pyinstaller -n Final2x-core Final2x_core/__main__.py
 	poetry run python scripts/post_pyinstaller.py
+
+run:
+	uvicorn main:app --reload

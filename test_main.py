@@ -26,24 +26,6 @@ def test_upload_status():
     assert response.json()["status"] in ["OK", "NO"]
 
 
-# def test_upload_image():
-#     """测试上传图片接口"""
-#     response = client.post("/upload_image")
-#     assert response.status_code == 200
-#     # 假设 Uploader().upload_image() 返回 {"status": "OK"} 或 {"status": "NO"}
-#     assert "status" in response.json()
-#     assert response.json()["status"] in ["OK", "NO"]
-
-
-# def test_remove_image():
-#     """测试删除图片接口"""
-#     response = client.post("/remove_image")
-#     assert response.status_code == 200
-#     # 假设 Uploader().remove_image() 返回 {"status": "OK"} 或 {"status": "NO"}
-#     assert "status" in response.json()
-#     assert response.json()["status"] in ["OK", "NO"]
-
-
 def test_process():
     """测试处理图片接口"""
     import cv2
