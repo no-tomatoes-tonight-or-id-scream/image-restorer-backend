@@ -2,7 +2,7 @@ import requests
 import base64
 
 # 基础 URL
-BASE_URL = "https://img.jrhim.com"
+BASE_URL = "http://127.0.0.1:8000"
 
 def test_root():
     """测试根路径"""
