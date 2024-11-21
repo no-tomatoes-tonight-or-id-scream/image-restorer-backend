@@ -6,7 +6,8 @@ from processor import Processor
 from fastapi import UploadFile, File
 from fastapi.encoders import jsonable_encoder
 import numpy as np
-
+from fastapi import BackgroundTasks
+import uuid
 app = FastAPI()
 
 
@@ -34,15 +35,21 @@ def upload_status():
 def bytes_encoder(obj):
     return base64.b64encode(obj).decode('utf-8')
 
+task_status = {}
+
 @app.post("/process")
 async def process(
-    target_scale: float, pretrained_model_name: str, image: UploadFile = File(...)
+    target_scale: float,
+    pretrained_model_name: str,
+    background_tasks: BackgroundTasks,
+    image: UploadFile = File(...),
 ):
     """
-    上传 config 字典
-    :param config: 上传的配置字典
-    :return: 返回 OK 或者 ERROR
+    Receive the processing request, start processing in background, and return confirmation.
     """
+    # Generate a unique task ID
+    task_id = str(uuid.uuid4())
+
     config = {
         "device": "auto",
         "gh_proxy": None,
@@ -51,20 +58,31 @@ async def process(
         "pretrained_model_name": pretrained_model_name,
         "target_scale": target_scale,
     }
-    result = Processor().process(config, image)
 
-    # 使用自定义编码器，对 bytes 进行 base64 编码
-    custom_encoder = {
-        bytes: bytes_encoder,
-        np.ndarray: lambda x: base64.b64encode(x).decode('utf-8')
-    }
+    task_status[task_id] = {"status": "processing", "result": None}
+    image_data = await image.read()
+    background_tasks.add_task(process_image, task_id, config, image_data)
+
+    return {"status": "received", "task_id": task_id}
+
+def process_image(task_id, config, image_data):
+    result = Processor().process(config, image_data)
+
+    task_status[task_id]["status"] = "completed"
+    task_status[task_id]["result"] = result
+
+@app.post("/get_result")
+def get_result(task_id: str):
+    """
+    获取处理结果
+    :return: 返回处理结果
+    """
+    return task_status[task_id]
+
+def main():
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8090)
     
-    return jsonable_encoder(result, custom_encoder=custom_encoder)
-
-@app.post("/get_processing_status")
-def get_processing_status():
-    """
-    获取处理状态
-    :return: 返回处理状态
-    """
-    return Processor().get_processing_status()
+if __name__ == "__main__":
+    main()
