@@ -3,3 +3,4 @@ __pycache__
 lock_*
 .pytest_cache
 upload/*
+results/*

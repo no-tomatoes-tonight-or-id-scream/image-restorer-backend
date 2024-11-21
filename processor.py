@@ -12,7 +12,7 @@ from util import calculate_image_similarity, compare_image_size
 class Processor:
     def __init__(self):
         pass
-    
+
     def final2x_core(self, config: dict, source_img):
         """
         调用 final2x_core 方法，返回处理的图像
@@ -38,13 +38,15 @@ class Processor:
             - status: 返回 OK 或者 NO
             - result: 返回处理的图像
         """
-        print(source_img)
+        # print(source_img)
         # 调用 final2x_core 方法，返回处理的图像
         result = self.final2x_core(config, source_img)
         print(result.shape)
-        _, result = cv2.imencode(f".{image_format}", result)
+        cv2.imwrite(
+            f"results/{task_id}.{image_format}", result
+        )
+        return {"status": "OK"}
 
-        return result
 
 def main():
     processor = Processor()
