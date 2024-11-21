@@ -26,9 +26,7 @@ class Processor:
         print(json_str)
         SRconfig = SRConfig.from_json_str(json_str)
         SR = CCRestoration(config=SRconfig)
-        source_img = cv2.imdecode(
-            np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR
-        )
+        source_img = cv2.imread(image_path, cv2.IMREAD_COLOR)
         # img: np.ndarray
         result_img = SR.process(source_img)
 

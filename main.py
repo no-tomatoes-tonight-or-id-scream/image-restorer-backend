@@ -81,7 +81,6 @@ def get_result(task_id: str):
 
 def main():
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8090)
     
 if __name__ == "__main__":
