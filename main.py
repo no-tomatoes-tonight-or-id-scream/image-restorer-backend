@@ -1,18 +1,30 @@
 import base64
+import io
 import os
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from processor import Processor
 from fastapi import UploadFile, File
-from fastapi.encoders import jsonable_encoder
 import numpy as np
 import cv2
 from fastapi import BackgroundTasks
 from typing import Dict
 from threading import Lock
 import uuid
+from fastapi.middleware.cors import CORSMiddleware
+
+# device_list = ["auto", "cpu", "cuda", "mps", "xpu", "xla", "meta"]
+device = "cuda"
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def numpy_encoder(obj):
@@ -26,10 +38,6 @@ def read_root():
     return {"message": "Welcome to the Image Restorer Backend", "status": "OK"}
 
 
-def bytes_encoder(obj):
-    return base64.b64encode(obj).decode("utf-8")
-
-
 task_status: Dict[str, Dict] = {}
 task_status_lock = Lock()
 
@@ -40,12 +48,21 @@ async def process(
     pretrained_model_name: str,
     background_tasks: BackgroundTasks,
     image: UploadFile = File(...),
-):
+) -> Dict:
+    """
+    处理图像
+
+    :param target_scale: 目标放大倍数
+    :param pretrained_model_name: 预训练模型名称
+    :param image: 待处理图像文件
+    :param background_tasks: 后台任务
+    :return: 任务状态
+    """
     # 生成唯一任务 ID
     task_id = str(uuid.uuid4())
 
     config = {
-        "device": "auto",
+        "device": "cuda",
         "gh_proxy": None,
         "input_path": None,
         "output_path": None,
@@ -116,10 +133,13 @@ def process_image(task_id, config, image_format, image_path, source_img):
             task_status[task_id]["error"] = str(e)
 
 
-@app.post("/get_result")
-def get_result(task_id: str):
+@app.post("/get_status")
+def get_status(task_id: str) -> Dict:
     """
-    获取处理结果
+    获取处理任务状态
+
+    :param task_id: 任务 ID
+    :return: 任务状态，可能为 processing, completed, error。当状态为 error 时，会包含 error 字段
     """
     # 使用线程安全方式获取任务状态
     with task_status_lock:
@@ -127,25 +147,39 @@ def get_result(task_id: str):
         if task_id not in task_status:
             raise HTTPException(status_code=404, detail="Task not found")
 
-        if task_status[task_id]["status"] == "completed":
-            # 查找结果文件，目录里为 uuid 的文件名，后缀未知
-            result_file = None
-            for file in os.listdir("results"):
-                if file.startswith(task_id):
-                    result_file = file
-                    break            
-            # 返回处理结果
-            return {
-                "status": "completed",
-                "result": FileResponse(f"results/{result_file}")
-            }
-        # 返回任务状态
-        return {"status": task_status[task_id]["status"]}
+        return task_status[task_id]
+
+
+@app.get("/get_result")
+async def get_result(task_id: str) -> StreamingResponse:
+    """
+    获取处理结果
+
+    :param task_id: 任务 ID
+    :return: 处理结果
+    """
+    if task_id not in task_status:
+        raise HTTPException(status_code=404, detail="Task not found")
+    result_file = None
+    for file in os.listdir("results"):
+        if file.startswith(task_id):
+            result_file = file
+            break
+    file_path = f"results/{result_file}"
+    image_format = result_file.split(".")[-1]
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # 读取文件并创建文件流
+    with open(file_path, "rb") as file:
+        return StreamingResponse(
+            io.BytesIO(file.read()), media_type=f"image/{image_format}"
+        )
 
 
 def main():
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8090)
 
 
