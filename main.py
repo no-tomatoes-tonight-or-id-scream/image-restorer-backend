@@ -180,15 +180,15 @@ async def get_result(task_id: str) -> StreamingResponse:
         )
 
 @app.get("/get_model_list")
-def get_model_list() -> list:
+def get_model_list() -> Dict:
     """
     从 ConfigType 获取模型列表
     
     :return: 模型列表
     """
-    model_list = []
+    model_list: Dict = {}
     for model in ConfigType:
-        model_list.append(model.value)
+        model_list[model.name] = model.value
     return model_list
 
 def main():
