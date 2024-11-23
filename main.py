@@ -1,17 +1,19 @@
-import base64
 import io
 import os
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
-from processor import Processor
-from fastapi import UploadFile, File
 import numpy as np
 import cv2
-from fastapi import BackgroundTasks
-from typing import Dict
+
+from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File
+from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+from typing import Dict, Union
 from threading import Lock
 import uuid
-from fastapi.middleware.cors import CORSMiddleware
+
+from utils import Processor
+from ccrestoration import ConfigType
+
 
 # device_list = ["auto", "cpu", "cuda", "mps", "xpu", "xla", "meta"]
 device = "cuda"
@@ -45,7 +47,7 @@ task_status_lock = Lock()
 @app.post("/process")
 async def process(
     target_scale: float,
-    pretrained_model_name: str,
+    pretrained_model_name: Union[ConfigType, str],
     background_tasks: BackgroundTasks,
     image: UploadFile = File(...),
 ) -> Dict:
@@ -72,7 +74,7 @@ async def process(
 
     # 使用线程安全方式更新任务状态
     with task_status_lock:
-        task_status[task_id] = {"status": "processing", "result": None, "error": None}
+        task_status[task_id] = {"status": "processing"}
 
     image_format = image.filename.split(".")[-1]
     image_path = f"upload/{task_id}.{image_format}"
@@ -124,7 +126,6 @@ def process_image(task_id, config, image_format, image_path, source_img):
         # 使用线程安全方式更新任务状态
         with task_status_lock:
             task_status[task_id]["status"] = "completed"
-            # task_status[task_id]["result"] = FileResponse(f"results/{task_id}.{image_format}")
     except Exception as e:
         # 捕获并记录处理过程中的错误
         print(e)
@@ -133,7 +134,7 @@ def process_image(task_id, config, image_format, image_path, source_img):
             task_status[task_id]["error"] = str(e)
 
 
-@app.post("/get_status")
+@app.get("/get_status")
 def get_status(task_id: str) -> Dict:
     """
     获取处理任务状态
@@ -177,9 +178,21 @@ async def get_result(task_id: str) -> StreamingResponse:
             io.BytesIO(file.read()), media_type=f"image/{image_format}"
         )
 
+@app.get("/get_model_list")
+def get_model_list() -> list:
+    """
+    从 ConfigType 获取模型列表
+    
+    :return: 模型列表
+    """
+    model_list = []
+    for model in ConfigType:
+        model_list.append(model.value)
+    return model_list
 
 def main():
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8090)
 
 

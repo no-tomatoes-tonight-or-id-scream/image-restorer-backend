@@ -1,6 +1,6 @@
 from loguru import logger
 
-from Final2x_core.util.singleton import singleton
+from final2x_core.util.singleton import singleton
 
 
 @singleton

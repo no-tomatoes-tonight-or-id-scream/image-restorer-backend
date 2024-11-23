@@ -5,8 +5,8 @@ from pathlib import Path
 
 from loguru import logger
 
-from Final2x_core.config import SRConfig
-from Final2x_core.SRqueue import sr_queue
+from final2x_core.config import SRConfig
+from final2x_core.SRqueue import sr_queue
 
 if getattr(sys, "frozen", False):
     # frozen

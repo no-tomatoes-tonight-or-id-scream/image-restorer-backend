@@ -5,9 +5,9 @@ import cv2
 import numpy as np
 from loguru import logger
 
-from Final2x_core.config import SRConfig
-from Final2x_core.SRclass import CCRestoration
-from Final2x_core.util import PrintProgressLog
+from final2x_core.config import SRConfig
+from final2x_core.SRclass import CCRestoration
+from final2x_core.util import PrintProgressLog
 
 
 def sr_queue(config: SRConfig) -> None:

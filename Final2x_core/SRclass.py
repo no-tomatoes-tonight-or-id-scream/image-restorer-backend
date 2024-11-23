@@ -6,8 +6,8 @@ import numpy as np
 from ccrestoration import AutoModel, SRBaseModel
 from loguru import logger
 
-from Final2x_core.config import SRConfig
-from Final2x_core.util import PrintProgressLog
+from final2x_core.config import SRConfig
+from final2x_core.util import PrintProgressLog
 
 
 class CCRestoration:

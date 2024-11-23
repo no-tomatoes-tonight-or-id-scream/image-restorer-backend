@@ -1,12 +1,9 @@
 import io
 import json
-import os
-from fastapi import File, UploadFile
+from fastapi import UploadFile
 import cv2
-import numpy as np
 
-from Final2x_core import CCRestoration, SRConfig
-from util import calculate_image_similarity, compare_image_size
+from final2x_core import CCRestoration, SRConfig
 
 
 class Processor:

@@ -13,7 +13,7 @@ exclude_also = [
 
 [tool.coverage.run]
 omit = [
-  "Final2x_core/__main__.py"
+  "final2x_core/__main__.py"
 ]
 
 [tool.mypy]
@@ -36,7 +36,7 @@ classifiers = [
 description = "core library for Final2x"
 homepage = "https://github.com/Tohrusky/Final2x-core"
 license = "BSD-3-Clause"
-name = "Final2x_core"
+name = "final2x_core"
 readme = "README.md"
 repository = "https://github.com/Tohrusky/Final2x-core"
 version = "3.0.1"
@@ -67,7 +67,7 @@ mypy = "^1.8.0"
 ruff = "^0.3.7"
 
 [tool.poetry.scripts]
-Final2x-core = 'Final2x_core.__main__:main'
+Final2x-core = 'final2x_core.__main__:main'
 
 [tool.ruff]
 extend-ignore = ["B018", "B019", "RUF001", "PGH003", "PGH004", "RUF003", "E402", "RUF002", "B904"]

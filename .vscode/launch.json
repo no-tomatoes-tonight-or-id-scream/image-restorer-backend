@@ -8,7 +8,7 @@
             "name": "Python 调试程序：__main__.py 文件",
             "type": "debugpy",
             "request": "launch",
-            "program": "Final2x_core/__main__.py",
+            "program": "final2x_core/__main__.py",
             "console": "integratedTerminal"
         }
     ]
