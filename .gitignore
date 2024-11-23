@@ -2,5 +2,5 @@
 __pycache__
 lock_*
 .pytest_cache
-upload/*
+uploads/*
 results/*

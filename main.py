@@ -77,7 +77,7 @@ async def process(
         task_status[task_id] = {"status": "processing"}
 
     image_format = image.filename.split(".")[-1]
-    image_path = f"upload/{task_id}.{image_format}"
+    image_path = f"uploads/{task_id}.{image_format}"
 
     try:
         # 保存文件
