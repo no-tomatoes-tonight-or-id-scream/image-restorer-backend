@@ -25,7 +25,24 @@ class Processor:
         result_img = SR.process(source_img)
         return result_img
 
-
+    def process(
+        self, config: dict, task_id, image_format: str, image_path: str, source_img
+    ):
+        """
+        上传 config 字典
+        :param config: 上传的配置字典
+        :return:
+            - status: 返回 OK 或者 NO
+            - result: 返回处理的图像
+        """
+        # print(source_img)
+        # 调用 final2x_core 方法，返回处理的图像
+        result = self.final2x_core(config, source_img)
+        print(result.shape)
+        cv2.imwrite(
+            f"results/{task_id}.{image_format}", result
+        )
+        return {"status": "OK"}
 
 
 def main():
