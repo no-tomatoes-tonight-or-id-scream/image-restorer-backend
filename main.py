@@ -142,6 +142,7 @@ def get_status(task_id: str) -> Dict:
     :param task_id: 任务 ID
     :return: 任务状态，可能为 processing, completed, error。当状态为 error 时，会包含 error 字段
     """
+    
     # 使用线程安全方式获取任务状态
     with task_status_lock:
         # 检查任务是否存在
