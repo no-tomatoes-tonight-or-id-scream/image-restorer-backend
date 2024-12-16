@@ -2,6 +2,31 @@
 
 This is the backend for the Image Restorer project. It is a FastAPI application that uses Final2x-core to restore images.
 
+## Project Structure
+
+```bash
+.
+├── Final2x_core    # Main library of image-restore
+│   ├── SRclass.py
+│   ├── SRqueue.py
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── config.py
+│   ├── config.yaml
+│   └── util
+├── Makefile
+├── README.md
+├── main.py         # FastAPI backend src
+├── poetry.lock
+├── pyproject.toml
+├── tests           # Useful tests
+│   ├── test.py
+│   └── test_main.py
+└── utils           # Useful utils that impl the backend
+    ├── __init__.py
+    └── processor.py
+```
+
 ## Run
 
 Make sure that you have `poetry` and `make` installed, then do `poetry install` at the root directory to install a subset of [Final2x-core](https://github.com/Tohrusky/Final2x-core). Then run `pip install fastapi uvicorn` to install our backend framework [FastAPI](https://fastapi.tiangolo.com/). Finally do `make run` and visit `http://localhost:8090/`, if everything works fine, your output is as follow:
